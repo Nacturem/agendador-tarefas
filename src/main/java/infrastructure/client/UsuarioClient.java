@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(name ="usuario", url = "${usuario.url}")
 public interface UsuarioClient {
 
-    @GetMapping // get nao precisa de uri
+    @GetMapping("/usuario") // get nao precisa de uri
     UsuarioDTO buscaUsuarioPorEmail(@RequestParam("email") String email,
                                     @RequestHeader("Authorization") String token);
 
