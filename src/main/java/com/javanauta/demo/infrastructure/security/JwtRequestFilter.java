@@ -1,6 +1,6 @@
-package infrastructure.security;
+package com.javanauta.demo.infrastructure.security;
 
-
+import jakarta.annotation.Nonnull;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,13 +21,14 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     // Construtor que inicializa as propriedades com instâncias fornecidas
     public JwtRequestFilter(JwtUtil jwtUtil, UserDetailsServiceImpl userDetailsServiceimpl) {
+
         this.jwtUtil = jwtUtil;
         this.userDetailsServiceimpl = userDetailsServiceimpl;
     }
 
     // Método chamado uma vez por requisição para processar o filtro
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+    protected void doFilterInternal(HttpServletRequest request, @Nonnull HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
 
         // Obtém o valor do header "Authorization" da requisição
@@ -45,7 +46,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 // Carrega os detalhes do usuário a partir do nome de usuário
                 UserDetails userDetails = userDetailsServiceimpl.carregaDadosUsuario(username,authorizationHeader);
                 // Valida o token JWT
-                if (jwtUtil.validateToken(token, username)) {
+                if (jwtUtil.validateToken(token, username)){
                     // Cria um objeto de autenticação com as informações do usuário
                     UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                             userDetails, null, userDetails.getAuthorities());
@@ -58,4 +59,5 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         // Continua a cadeia de filtros, permitindo que a requisição prossiga
         chain.doFilter(request, response);
     }
-}
+    }
+
