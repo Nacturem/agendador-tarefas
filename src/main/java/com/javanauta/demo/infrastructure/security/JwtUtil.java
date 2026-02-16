@@ -1,4 +1,4 @@
-package infrastructure.security;
+package com.javanauta.demo.infrastructure.security;
 
 
 import io.jsonwebtoken.Claims;
@@ -14,7 +14,6 @@ public class JwtUtil {
 
     // Chave secreta usada para assinar e verificar tokens JWT
     private final String secretKey = "sua-chave-secreta-super-segura-que-deve-ser-bem-longa";
-
 
 
     // Extrai as claims do token JWT (informações adicionais do token)

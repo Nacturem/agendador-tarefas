@@ -1,4 +1,4 @@
-package business.dto;
+package com.javanauta.demo.business.dto;
 
 import lombok.*;
 
