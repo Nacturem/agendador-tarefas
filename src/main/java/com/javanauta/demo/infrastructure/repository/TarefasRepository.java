@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface TarefasRepository extends MongoRepository<TarefasEntity, String> {
 
-    List<TarefasEntity> findByDataEventoBetweenAndStatusNotificacaoEnum(LocalDateTime dataInicial,
+    List<TarefasEntity> findByDataEventoBetweenAndStatusNotificacao(LocalDateTime dataInicial,
                                                                         LocalDateTime dataFinal,
                                                                         StatusNotificacao status);
 
