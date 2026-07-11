@@ -1,6 +1,6 @@
 package com.javanauta.demo.business;
 
-import com.javanauta.demo.business.dto.TarefasDTO;
+import com.javanauta.demo.business.dto.TarefasDTORecord;
 import com.javanauta.demo.business.mapper.TarefaConverter;
 import com.javanauta.demo.business.mapper.TarefaUpdateConverter;
 import com.javanauta.demo.infrastructure.entity.TarefasEntity;
@@ -9,9 +9,7 @@ import com.javanauta.demo.infrastructure.exceptions.ResourceNotFoundException;
 import com.javanauta.demo.infrastructure.repository.TarefasRepository;
 import com.javanauta.demo.infrastructure.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,28 +24,29 @@ public class TarefasService {
     private final JwtUtil jwtUtil;
     private final TarefaUpdateConverter tarefaUpdateConverter;
 
-    public TarefasDTO gravarTarefa(String token,TarefasDTO dto){
+    public TarefasDTORecord gravarTarefa(String token,TarefasDTORecord dto){
        String email = jwtUtil.extractUsername(token.substring(7));
-        dto.setDataCriacao(LocalDateTime.now());
-        dto.setStatusNotificacao(StatusNotificacao.PENDENTE);
-        dto.setEmailUsuario(email);
-        TarefasEntity entity = tarefaConverter.paraTarefaEntity(dto);
+        TarefasDTORecord dtoFinal = new TarefasDTORecord(null, dto.nomeTarefa(), dto.descricao(), LocalDateTime.now(),
+                dto.dataEvento(), email, null,StatusNotificacao.PENDENTE);
+
+
+        TarefasEntity entity = tarefaConverter.paraTarefaEntity(dtoFinal);
 
 
         return tarefaConverter.paraTarefaDTO(
                 tarefaRepository.save(entity));
     }
 
-    public List<TarefasDTO> buscaTarefasAgendadasPorPeriodo(LocalDateTime dataInicial, LocalDateTime dataFinal){
-        return tarefaConverter.paraListaTarefasDTO(
+    public List<TarefasDTORecord> buscaTarefasAgendadasPorPeriodo(LocalDateTime dataInicial, LocalDateTime dataFinal){
+        return tarefaConverter.paraListaTarefasDTORecord(
                 tarefaRepository.findByDataEventoBetweenAndStatusNotificacao(dataInicial, dataFinal,
                         StatusNotificacao.PENDENTE));
     }
 
-    public List<TarefasDTO> buscaTarefasPorEmail(String token){
+    public List<TarefasDTORecord> buscaTarefasPorEmail(String token){
         String email = jwtUtil.extractUsername(token.substring(7));
         List<TarefasEntity> listaTarefas = tarefaRepository.findByEmailUsuario(email);
-        return tarefaConverter.paraListaTarefasDTO(listaTarefas);
+        return tarefaConverter.paraListaTarefasDTORecord(listaTarefas);
     }
 
     public void deletaTarefaPorId(String id) {
@@ -58,7 +57,7 @@ public class TarefasService {
                     e.getCause());
         }
     }
-    public TarefasDTO alteraStatus(StatusNotificacao status, String id){
+    public TarefasDTORecord alteraStatus(StatusNotificacao status, String id){
         try {
         TarefasEntity entity = tarefaRepository.findById(id).
                 orElseThrow(() -> new ResourceNotFoundException("Tarefa nao encontrada" + id));
@@ -71,7 +70,7 @@ public class TarefasService {
         }
     }
 
-    public TarefasDTO updateTarefas(TarefasDTO dto, String id) {
+    public TarefasDTORecord updateTarefas(TarefasDTORecord dto, String id) {
         try {
             TarefasEntity entity = tarefaRepository.findById(id).
                     orElseThrow(() -> new ResourceNotFoundException("Tarefa nao encontrada" + id));
